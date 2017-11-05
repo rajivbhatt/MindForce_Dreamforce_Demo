@@ -1,0 +1,308 @@
+<apex:page controller="MuseNavigationDemoController" action="{!getOrCreatePushChannel}">
+<apex:slds />
+<div class="slds-scope">
+
+<head>
+  <title>MindForce: Control Salesforce with your Mind</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   <apex:includeScript value="{!$Resource.jquery}"/>
+   
+ 
+           
+    <apex:includeScript value="{!$Resource.cometd}"/>
+    <apex:includeScript value="{!$Resource.jquery}"/>
+    <apex:includeScript value="{!$Resource.json2}"/>
+    <apex:includeScript value="{!$Resource.jquery_cometd}"/>
+    <apex:includeScript value="{!$Resource.cometdReplayExtension}"/>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+  <style>
+  .carousel-control {background-image : none !important;}
+  .carousel-inner > .item > img,
+  .carousel-inner > .item > a > img {
+      width: 70%;
+      margin: auto;
+  }
+   body {
+            background-image: url("{!URLFOR($Resource.Dreamforce_background_image)}");
+            background-repeat:repeat;
+            background-size: cover;
+background-attachment: fixed;
+        }
+  </style>
+</head>
+
+<body >
+    <apex:form >  
+    <h2 style = "font-size:xx-large;color:cadetblue;font-weight:600;margin-top:10px;margin-left:10px;">MindForce: Control Salesforce with your Mind</h2>
+
+<div class="container" style= "margin-top:250px;">
+  
+  <div id="myCarousel" class="carousel slide">
+    <!-- Indicators 
+    <ol class="carousel-indicators">
+      <li class="item1 active"></li>
+      <li class="item2"></li>
+      <li class="item3"></li>
+      <li class="item4"></li>
+    </ol>-->
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+
+      <div class="item active" style = "height:200px;" id = "approvalInfo">
+        <!--<img src="img_chania.jpg" alt="test0" width="460" height="345"/>-->
+        <apex:outputPanel id="approvalInfo">
+
+     <h3  style = "font-size:x-large;margin-left:15rem;">     {!opportunitySoLst[0].name}</h3>
+<br/><br/>     <h3  style = "font-size:large;margin-left:15rem;margin-top:6rem;text-align:left;float:left;">  Approver Name:  <b>{!processInstanceSoLst[0].StepsAndWorkitems[0].Actor.Name}</b></h3>
+<h3 style = "font-size:large;margin-right:22rem;margin-top:6rem;text-align:right;float:right;"> Approval Status:  <b>{!processInstanceSoLst[0].StepsAndWorkitems[0].StepStatus}</b></h3>
+</apex:outputPanel>
+       <!-- <div class="carousel-caption">
+     <h3  style = "font-size:x-large;"> Approval Status:  {!processInstanceSoLst[0].StepsAndWorkitems[0].StepStatus}</h3>
+</apex:outputPanel>
+        </div> -->
+      </div>
+
+<div class="item" style = "height:200px;">
+        <!--<img src="img_chania.jpg" alt="{!opportunitySoLst[0]}" width="460" height="345"/>-->
+     <h3  style = "font-size:x-large;margin-left:15rem;">     {!opportunitySoLst[1].name}</h3>
+<br/><br/>     <h3  style = "font-size:large;margin-left:15rem;margin-top:5rem;text-align:left;float:left;">  Approver Name:  <b>{!processInstanceSoLst[1].StepsAndWorkitems[0].Actor.Name}</b></h3>
+<h3 style = "font-size:large;margin-right:22rem;margin-top:5rem;text-align:right;float:right;"> Approval Status:  <b>{!processInstanceSoLst[1].StepsAndWorkitems[0].StepStatus}</b></h3>
+
+      </div>
+<div class="item" style = "height:200px;">
+        <!--<img src="img_chania.jpg" alt="test0" width="460" height="345"/>-->
+     <h3  style = "font-size:x-large;margin-left:15rem;">     {!opportunitySoLst[2].name}</h3>
+<br/><br/>     <h3  style = "font-size:large;margin-left:15rem;margin-top:5rem;text-align:left;float:left;">  Approver Name:  <b>{!processInstanceSoLst[2].StepsAndWorkitems[0].Actor.Name}</b></h3>
+<h3 style = "font-size:large;margin-right:22rem;margin-top:5rem;text-align:right;float:right;"> Approval Status:  <b>{!processInstanceSoLst[2].StepsAndWorkitems[0].StepStatus}</b></h3>
+      </div>
+            
+         
+    </div>
+
+    <!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" role="button">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+</div>
+<apex:outputPanel id="progressBar">
+      <div id="progressBar3" class="container" style = "width:50%">
+
+  <p style = "font-size:small;">Your Concentration Level</p> 
+  <div class="progress"  id="progressBar2">
+    <div  id="progressBar1" class="{!progressBarClass}" role="progressbar" aria-valuenow="{!progressBarValue}" aria-valuemin="0" aria-valuemax="100" style="width:{!progressBarValue}%;">
+    <div style="color:{!IF((progressBarValue==0),'black','white')};margin-left:5px;"> {!progressBarMessage} </div>
+    </div>
+  </div>
+  </div>
+</apex:outputPanel>
+
+ <apex:actionFunction name="refreshConcentrationProgress" 
+     action="{!refreshConcentrationProgress}" rerender="progressBar,approvalInfo" >
+     <apex:param id="RecordId" name="RecordId" value=""/>
+</apex:actionFunction>
+    
+    </apex:form>  
+
+<script type="text/javascript">
+
+
+
+    var cometd;
+    var subscribedToChannel;
+    var isExtensionEnabled;
+    var metaConnectListener;
+    var metaDisconnectListener;
+    var metaHandshakeListener;
+    var metaSubscribeListener;
+    var metaUnSubscribeListener
+    var metaUnSucessfulListener;
+    var REPLAY_FROM_KEY = 'replay';
+    (function($){
+         $(document).ready(function() {
+         
+         $("#myCarousel").carousel({interval: false});
+    
+    // Enable Carousel Indicators
+    $(".item1").click(function(){
+        $("#myCarousel").carousel(0);
+    });
+    $(".item2").click(function(){
+        $("#myCarousel").carousel(1);
+    });
+    $(".item3").click(function(){
+        $("#myCarousel").carousel(2);
+    });
+    $(".item4").click(function(){
+        $("#myCarousel").carousel(3);
+    });
+    
+    // Enable Carousel Controls
+    $(".left").click(function(){
+        $("#myCarousel").carousel("prev");
+        displayNextRecord();
+    });
+    $(".right").click(function(){
+        $("#myCarousel").carousel("next");
+    });
+         
+         $('#content').append('<br>');
+
+         var REPLAY_FROM = 'replayFrom';
+        var channel = '{!channel}';
+
+        cometd = $.cometd;
+    
+        // ensure extension isn't already registered
+        if (cometd.getExtension(REPLAY_FROM) != null) {                     
+            cometd.unregisterExtension(REPLAY_FROM, replayExtension);                               
+        }
+        
+        // register Durable PushTopic Streaming replayFrom extension
+        var replayExtension = new cometdReplayExtension();
+        replayExtension.setChannel(channel);
+        replayExtension.setReplay('{!replayFrom}');
+        if(isExtensionEnabled) {
+            replayExtension.setExtensionEnabled(isExtensionEnabled);
+        }
+        cometd.registerExtension(REPLAY_FROM, replayExtension); 
+
+        // unsubscribe if you have already subscribed
+        if(subscribedToChannel) {
+            cometd.unsubscribe(subscribedToChannel, null, function(unsubscribeReply) {
+                                console.log('subscribedToChannel--> calling subscribe');                 
+                subscribedToChannel = subscribe(channel); 
+            });
+        }
+
+
+        var _connected = false;
+        if(!metaConnectListener) {
+            metaConnectListener = cometd.addListener('/meta/connect', function(message) {        
+                if (cometd.isDisconnected()) {
+                    $('#content').append('Disconnected: '+JSON.stringify(message)+'<br><br>');
+                    return;
+                }
+          
+                var wasConnected = _connected;                
+                _connected = message.successful;
+                
+                if (!wasConnected && _connected) {
+                    $('#content').append('DEBUG: Connection Successful : '+JSON.stringify(message)+'<br><br>');                    
+                } else if (wasConnected && !_connected) {
+                    $('#content').append('DEBUG: Disconnected from the server'+JSON.stringify(message)+'<br><br>');
+                }
+            }); 
+        }   
+
+        if(!metaDisconnectListener) {
+            metaDisconnectListener = cometd.addListener('/meta/disconnect', function(message) {  
+                $('#content').append('DEBUG: /meta/disconnect message: '+JSON.stringify(message)+' <br><br>');
+            });
+        }
+        
+        if(!metaHandshakeListener) {
+            metaHandshakeListener = cometd.addListener('/meta/handshake', function(message) {
+                if (message.successful) {
+                    $('#content').append('<br><br> DEBUG: Handshake Successful: '+JSON.stringify(message)+' <br><br>');                            
+                    
+                    if (message.ext && message.ext[REPLAY_FROM_KEY] == true) {
+                        isExtensionEnabled = true;
+                    }   
+                    console.log('metaHandshakeListener --> calling subscribe');                 
+                    subscribedToChannel = subscribe(channel);
+                } else
+                    $('#content').append('DEBUG: Handshake Unsuccessful: '+JSON.stringify(message)+' <br><br>');
+            });
+        }
+
+        if(!metaSubscribeListener) {
+            metaSubscribeListener = cometd.addListener('/meta/subscribe', function(message) {  
+                if (message.successful) {
+                    $('#content').append('DEBUG: Subscribe Successful '+channel+': '+JSON.stringify(message)+' <br><br>');
+                } else {
+                    $('#content').append('DEBUG: Subscribe Unsuccessful '+channel+': '+JSON.stringify(message)+' <br><br>');                
+                }    
+            });
+        }
+
+                    
+        if(!metaUnSubscribeListener) {
+            metaUnSubscribeListener = cometd.addListener('/meta/unsubscribe', function(message) {  
+                if (message.successful) {
+                    $('#content').append('DEBUG: Unsubscribe Successful '+JSON.stringify(message)+' <br><br>');
+                } else {
+                    $('#content').append('DEBUG: Unsubscribe Unsuccessful '+JSON.stringify(message)+' <br><br>');                
+                }
+            });    
+        }                    
+                    
+        // notifies any failures
+        if(!metaUnSucessfulListener) {
+            metaUnSucessfulListener = cometd.addListener('/meta/unsuccessful', function(message) {  
+                $('#content').append('DEBUG:  /meta/unsuccessful Error: '+JSON.stringify(message)+' <br><br>');
+            });
+        }
+        
+        cometd.websocketEnabled = false;
+
+        // Connect to the CometD endpoint
+         cometd.configure({
+                url: window.location.protocol+'//'+window.location.hostname+ (null != window.location.port ? (':'+window.location.port) : '') +'/cometd/37.0/',
+                requestHeaders: { Authorization: 'OAuth {!$Api.Session_ID}'}
+            });
+            
+        cometd.handshake();
+
+ });
+    })(jQuery)
+
+    function subscribe(channel) {
+        // Subscribe to a topic. JSON-encoded update will be returned in the callback
+        return cometd.subscribe(channel, function(message) {
+        console.debug('recordId='+JSON.stringify(message.data.sobject));
+
+           if(message.data.sobject.User_Action__c === 'Left') 
+           {
+             $(".left").click();
+           }
+           else if(message.data.sobject.User_Action__c === 'Right') 
+           {
+           $(".right").click();
+           }
+           else {
+           refreshConcentrationProgress(message.data.sobject.Id); 
+           }
+        });
+    }
+
+
+    function disconnect() {
+        if (cometd) {
+            cometd.removeListener(metaConnectListener);
+            cometd.removeListener(metaDisconnectListener);
+            cometd.removeListener(metaHandshakeListener);
+            cometd.removeListener(metaSubscribeListener);
+            cometd.removeListener(metaUnSubscribeListener);
+            cometd.unsubscribe(subscribedToChannel);
+            cometd.disconnect();
+        }
+    }    
+    window.onbeforeunload = disconnect;
+    
+    </script>
+
+</body>
+</div>
+<apex:image url="{!URLFOR($Resource.Dreamforce_background_image)}"  />
+</apex:page>
